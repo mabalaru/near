@@ -1,0 +1,11 @@
+---
+
+- name: Stop neard
+  systemd:
+    name: neard
+    state: stopped
+
+- name: Start neard
+  systemd:
+    name: neard
+    state: started
