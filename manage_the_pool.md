@@ -56,15 +56,14 @@ near view stakingPool_ID get_reward_fee_fraction '{}'
 ```
 
 
-## Get Back some tokens from pool
+## Get some tokens from the pool
 
 ```
 # Call unstake first.
 near call stakingPool_ID unstake '{"amount": "200000000000000000000000000"}' --accountId account_ID
 
 
-# after 3 epochs
-# call withdraw
+# after 3 epochs call withdraw
 
 near call stakingPool_ID withdraw '{"amount": "200000000000000000000000000"}' --accountId account_ID
 ```
