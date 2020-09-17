@@ -1,0 +1,11 @@
+---
+
+- hosts: monitoring
+  roles:
+  - monitoring
+
+
+- hosts: newnodes
+  roles:
+  - monitoring
+#  tags: node_exporter

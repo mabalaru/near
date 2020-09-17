@@ -1,0 +1,19 @@
+---
+prometheus_userId: "prometheus"
+prometheus_groupId: "prometheus"
+prometheus_version: "2.20.0-rc.1"
+
+
+
+alertmanager_serviceName: "alertmanager"
+alertmanager_userId: "alertmanager"
+alertmanager_groupId: "alertmanager"
+alertmanager_version: "0.21.0"
+
+
+
+node_exporter_userId: "node_exporter"
+node_exporter_groupId: "node_exporter"
+node_exporter_version: "1.0.1"
+
+

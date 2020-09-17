@@ -1,0 +1,89 @@
+groups:
+- name: common
+  rules:
+  - alert: InstanceDown
+    annotations:
+      summary: {{ '"{{ $labels.job }} on {{ $labels.instance }} is down"' }}
+    expr: up == 0
+    for: 3m
+    labels:
+      severity: info
+- name: node_exporter
+  rules:
+  - alert: NodeOutOfMemory
+    annotations:
+      summary: {{ 'Node {{ $labels.instance }} out of memory ({{ humanize $value }} < 10%)' }}
+    expr: node_memory_MemAvailable_bytes / node_memory_MemTotal_bytes * 100 < 10
+    for: 3m
+    labels:
+      severity: info
+  - alert: NodeMemoryPressure
+    annotations:
+      summary: {{ 'Node {{ $labels.instance }} is seeing a high page fault rate ({{ humanize $value }} > 1000)' }}
+    expr: rate(node_vmstat_pgmajfault[1m]) > 1000
+    for: 3m
+    labels:
+      severity: info
+  - alert: NodeHighNetworkEgress
+    annotations:
+      summary: {{ 'Node {{ $labels.instance }} sending too much traffic ({{ humanize $value }} > 10 MB/s)' }}
+    expr: sum by (instance) (irate(node_network_transmit_bytes_total[2m])) / 1024 / 1024 > 10
+    for: 3m
+    labels:
+      severity: info
+  - alert: NodeNetworkReceiveErrs
+    annotations:
+      summary: {{ 'Node {{ $labels.instance }} interface {{ $labels.device }} has encountered {{ printf "%.0f" $value }} receive errors' }}
+    expr: increase(node_network_receive_errs_total[2m]) > 10
+    for: 3m
+    labels:
+      severity: info
+  - alert: NodeNetworkTransmitErrs
+    annotations:
+      summary: {{ 'Node {{ $labels.instance }} interface {{ $labels.device }} has encountered {{ printf "%.0f" $value }} transmit errors' }}
+    expr: increase(node_network_transmit_errs_total[2m]) > 10
+    for: 3m
+    labels:
+      severity: info
+  - alert: NodeHighUDPSocketMemory
+    annotations:
+      summary: {{ 'Node {{ $labels.instance }} has high UDP socket memory usage ({{ humanize $value }} MB)' }}
+    expr: (node_sockstat_UDP_mem_bytes /1024/1024) > 100
+    for: 3m
+    labels:
+      severity: info
+  - alert: NodeOutOfDiskSpace
+    annotations:
+      summary: {{ 'Node {{ $labels.instance }} root partition low on free space ({{ humanize $value }} < 10%)' }}
+    expr: (node_filesystem_avail_bytes{device="rootfs"}  * 100) / node_filesystem_size_bytes{device="rootfs"} < 10
+    for: 3m
+    labels:
+      severity: info
+  - alert: NodeOutOfInodes
+    annotations:
+      summary: {{ 'Node {{ $labels.instance }} root partition low on free inodes ({{ humanize $value }} < 10%)' }}
+    expr: node_filesystem_files_free{device="rootfs"} / node_filesystem_files{device="rootfs"} * 100 < 10
+    for: 3m
+    labels:
+      severity: info
+  - alert: NodeHighCPULoad
+    annotations:
+      summary: {{ 'Node {{ $labels.instance }} had high CPU for 15 minutes ({{ humanize $value }}% > 80%)' }}
+    expr: 100 - (avg by(instance) (irate(node_cpu_seconds_total{mode="idle"}[5m])) * 100) > 80
+    for: 15m
+    labels:
+      severity: info
+  - alert: NodeHighSwapUsage
+    annotations:
+      summary: {{ 'Node {{ $labels.instance }} is using a lot of swap memory ({{ humanize $value }}% > 80%)' }}
+    expr: (1 - (node_memory_SwapFree_bytes / node_memory_SwapTotal_bytes)) * 100 > 80
+    for: 3m
+    labels:
+      severity: info
+  - alert: NodeSystemdServiceFailed
+    annotations:
+      summary: {{ 'Node {{ $labels.instance }} has a failed systemd service' }}
+    expr: node_systemd_unit_state{state="failed"} == 1
+    for: 3m
+    labels:
+      severity: info

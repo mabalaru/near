@@ -1,0 +1,12 @@
+---
+
+- include: node_exporter.yml
+  tags: node_exporter
+
+- include: prometheus.yml
+  tags: prometheus
+
+- include: alertmanager.yml
+  tags: alertmanager
+
+

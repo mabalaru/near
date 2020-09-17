@@ -1,0 +1,87 @@
+---
+
+- name: Creating prometheus user group
+  group: name="{{prometheus_groupId}}"
+
+
+- name: Creating prometheus user
+  user:
+    name: "{{prometheus_userId}}"
+    group: "{{prometheus_groupId}}"
+    system: yes
+    shell: "/sbin/nologin"
+    comment: "{{prometheus_userId}} nologin User"
+    createhome: "no"
+    state: present
+
+- name: Creates directory
+  file:
+    path: "/var/lib/prometheus/"
+    state: directory
+    owner: "{{prometheus_userId}}"
+    group: "{{prometheus_groupId}}"
+    mode: 0755
+
+- name: Install prometheus
+  unarchive:
+    src: "https://github.com/prometheus/prometheus/releases/download/v{{ prometheus_version }}/prometheus-{{ prometheus_version }}.linux-amd64.tar.gz"
+    dest: /tmp/
+    remote_src: yes
+
+- name: Copy prometheus file to bin
+  copy:
+    src: "/tmp/prometheus-{{ prometheus_version }}.linux-amd64/prometheus"
+    dest: "/usr/local/bin/prometheus"
+    owner: "{{prometheus_userId}}"
+    group: "{{prometheus_groupId}}"
+    remote_src: yes
+    mode: 0755
+
+- name: Delete prometheus tmp folder
+  file:
+    path: '/tmp/prometheus-{{ prometheus_version }}.linux-amd64'
+    state: absent
+
+
+- name: Creates directory
+  file: 
+    path: "{{ item }}"
+    state: directory
+    owner: "{{prometheus_userId}}"
+    group: "{{prometheus_groupId}}"
+    mode: 0755
+  with_items: 
+    - /etc/prometheus/
+    - /etc/prometheus/config
+    - /etc/prometheus/config/static
+
+- name: config file
+  template:
+    src: prometheus.conf.j2
+    dest: /etc/prometheus/prometheus.yml
+    owner: "{{prometheus_userId}}"
+    group: "{{prometheus_groupId}}"
+  tags: prometheus_config
+
+- name: alert config file /templates/alert.rules.yml
+  template:
+    src: "{{ role_path }}/templates/alert.rules.yml"
+    dest: /etc/prometheus/alert.rules.yml
+    owner: "{{prometheus_userId}}"
+    group: "{{prometheus_groupId}}"
+
+
+
+- name: Copy systemd init file
+  template:
+    src: prometheus_init.service.j2
+    dest: /etc/systemd/system/prometheus.service
+  notify: systemd_reload
+
+- name: Start prometheus service
+  service:
+    name: prometheus
+    state: restarted
+    daemon_reload: yes
+    enabled: yes
+

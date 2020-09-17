@@ -1,0 +1,19 @@
+- name: Restart the Prometheus service
+  service:
+    name: prometheus
+    state: restarted
+  listen: event_restart_prometheus
+
+- name: Reload systemd
+  command: systemctl daemon-reload
+  listen: systemd_reload
+
+- name: restart grafana
+  service:
+    name: grafana-server
+    state: restarted
+
+- name: Restart node_exporter service
+  service:
+    name: node_exporter
+    state: restarted

@@ -1,0 +1,26 @@
+global:
+receivers:
+- name: production-paging
+  pagerduty_configs:
+  - service_key: '{{ pd_integration_key_high }}'
+    severity: critical
+- name: production-info
+  pagerduty_configs:
+  - service_key: '{{ pd_integration_key_low }}'
+    severity: warning
+
+
+route:
+  group_by:
+  - '...'
+  group_wait: 0s
+  receiver: production-info
+  routes:
+  - group_by:
+    - '...'
+    group_wait: 0s
+    match:
+      env: prod
+      severity: paging
+    receiver: production-paging
+
