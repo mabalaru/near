@@ -1,0 +1,5 @@
+---
+
+- hosts: validator
+  tasks:
+    - include_tasks: includes/restart_neard.yml
