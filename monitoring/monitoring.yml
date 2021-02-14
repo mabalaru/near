@@ -5,7 +5,7 @@
   - monitoring
 
 
-- hosts: newnodes
+- hosts: near
   roles:
   - monitoring
-#  tags: node_exporter
+  tags: node_exporter

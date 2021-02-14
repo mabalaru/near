@@ -9,4 +9,5 @@
 - include: alertmanager.yml
   tags: alertmanager
 
-
+- include: near_exporter.yml
+  tags: near_exporter
