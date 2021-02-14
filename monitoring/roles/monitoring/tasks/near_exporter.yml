@@ -1,0 +1,16 @@
+---
+
+
+- name: Certus near_exporter service /templates/near-exporter.yml
+  template:
+    src: "{{ role_path }}/templates/near-exporter.service.j2"
+    dest: /etc/systemd/system/near-exporter.service
+    owner: "{{prometheus_userId}}"
+    group: "{{prometheus_groupId}}"
+
+
+- name: Copy near-exporter file to bin
+  copy:
+    src: "{{ role_path }}/files/near_exporter"
+    dest: "/usr/local/bin/near_exporter"
+    mode: 0755

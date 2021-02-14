@@ -1,0 +1,42 @@
+groups:
+- name: near
+  rules:
+   - labels:
+       severity: paging
+     annotations:
+       description: {{ '\'{{ $labels.instance }} is progressing at {{ $value }} blocks/5m (<50)\'' }}
+       summary: {{ 'near node {{ $labels.instance }} stuck' }}
+     alert: NearStuck
+     for: 3m
+     expr: increase(near_block_height_head[5m])
+       < 50
+   - labels:
+       severity: paging
+     annotations:
+       summary: {{ 'near_exporter {{ $labels.instance }} has been down for 5 minutes' }}
+     alert: NearExporterDown
+     for: 5m
+     expr: up{job="near_exporter"}
+       == 0
+{% if near_pool_name is defined %}
+{% for network,pool in near_pool_name.items() %}
+{% for name in pool %}
+   - labels:
+       severity: paging
+     annotations:
+       summary: {{ 'Block production rate of {{ $labels.instance }} validator {{ $labels.account_id
+         }} has been {{ $value }}/s (< 0.01) for 10 minutes' }}
+     alert: NearExporterLowBlockProduction_{{ name }}
+     for: 10m
+     expr: rate(near_exporter_validator_produced_blocks{env="prod",account_id=~"{{ name }}"}[5m])
+       < 0.01
+   - labels:
+       severity: paging
+     annotations:
+       summary: {{ 'near_exporter {{ $labels.instance }} is not exporting metrics for validator' }} {{ name }}
+     alert: NearExporterValidatorMissing_{{ name }}
+     for: 3m
+     expr: absent(near_exporter_validator_produced_blocks{env="prod",account_id="{{ name }}"})
+{% endfor %}
+{% endfor %}
+{% endif %}

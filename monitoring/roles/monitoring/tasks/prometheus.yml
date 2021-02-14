@@ -70,6 +70,12 @@
     owner: "{{prometheus_userId}}"
     group: "{{prometheus_groupId}}"
 
+- name: alert config file for near /templates/near.rules.yml
+  template:
+    src: "{{ role_path }}/templates/near.rules.yml"
+    dest: /etc/prometheus/near.rules.yml
+    owner: "{{prometheus_userId}}"
+    group: "{{prometheus_groupId}}"
 
 
 - name: Copy systemd init file

@@ -12,6 +12,7 @@ alerting:
 # Load rules once and periodically evaluate them according to the global 'evaluation_interval'.
 rule_files:
   - alert.rules.yml
+  - near.rules.yml
 
 # A scrape configuration containing exactly one endpoint to scrape:
 # Here it's Prometheus itself.
@@ -55,3 +56,13 @@ scrape_configs:
 {% endfor %}
 {% endif %}
 
+{% if near_exporter is defined %}
+  - job_name: near_exporter
+    static_configs:
+{% for entry in near_exporter %}
+    - targets: {{ [entry.ip]|to_json }}
+      labels:
+        service: '{{ entry.service }}'
+        env: '{{ entry.env }}'
+{% endfor %}
+{% endif %}

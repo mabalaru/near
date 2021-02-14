@@ -1,0 +1,12 @@
+[Unit]
+Description=near-exporter
+After=network.target
+
+[Service]
+Environment="NEAR_RPC_ADDR={{ near_rpc_url }}"
+ExecStart=/usr/local/bin/near_exporter
+Restart=always
+RestartSec=10s
+
+[Install]
+WantedBy=multi-user.target
