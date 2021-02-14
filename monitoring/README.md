@@ -13,7 +13,7 @@ With the help of Certus One who created the near exporter (https://github.com/ce
 Added alert.rules.yml
 Added compiled near_exporter binary + service
 Integrated near alerts. 
-
+```
 
 **Install guide:**
 
