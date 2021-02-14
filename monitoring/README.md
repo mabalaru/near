@@ -25,4 +25,5 @@ ansible-playbook -b -K monitoring.yml
 ```
 
 This will install on the local server all the components + it will install on the near server the node_exporter. 
-**do not run the near_exporter on the near validator. Run the service on different node and try to use a different RPC node, not the near validator"
+
+***do not run the near_exporter on the near validator. Run the service on different node and try to use a different RPC node, not the near validator"***
